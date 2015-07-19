@@ -9,8 +9,6 @@ import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern; 
@@ -20,7 +18,6 @@ import java.util.regex.Pattern;
  *
  */
 public final class Context {
-
 	
 	private AbstractDecoratedTextEditor editor = null;
 	String name;
@@ -37,29 +34,26 @@ public final class Context {
 				name = ((IPathEditorInput) input).getPath().toString();
 			}
 		}
-		
 	}
 
 	public String preprocessCommand(String command) {
 		
-		Matcher matcher = Pattern.compile("\\$\\(([a-z][_a-z]*)\\)").matcher(command);
+		Matcher matcher = Pattern.compile("\\$\\{([_A-Za-z][_0-9A-Za-z]*)\\}").matcher(command);
 		
 		StringBuffer buffer = new StringBuffer();
-		
-		final Map<String, String> map = new HashMap<String, String>();
-		map.put("selected_resource_loc", name);
-		
 		while(matcher.find()) {
 		
 			MatchResult result = matcher.toMatchResult();
-			matcher.appendReplacement(
-					
-				buffer,
-				map.containsKey(result.group(1)) ? map.get(result.group(1)) : result.group(0)
-			);
+			String replacement;
+			String key = result.group(1);
+			switch(key) {
+			
+				case "__FILE__": 	replacement = name; break;
+				default: 			replacement = result.group(0); break;
+			}
+			matcher.appendReplacement(buffer,replacement);
 		}
 		matcher.appendTail(buffer);
-		String ret = buffer.toString();
-		return ret;
+		return buffer.toString();
 	}
 }
