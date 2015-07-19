@@ -9,6 +9,7 @@ import mnita.externalfilter.preferences.EFToolDescription;
 import mnita.externalfilter.utils.EclipseEditorGetSet;
 import mnita.externalfilter.utils.Executor;
 import mnita.externalfilter.utils.ExternalCommand;
+import mnita.externalfilter.utils.Context;
 
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.preference.IPreferencePage;
@@ -85,7 +86,9 @@ public class EFToolsDynamicMenu extends ContributionItem {
     }
 
     static String processText(IWorkbenchWindow window, ITextSelection selection, EFToolDescription tool) {
-        ExternalCommand cmd = new ExternalCommand(tool, null == selection ? null : selection.getText());
+    	
+    	Context ctx = new Context(window);
+        ExternalCommand cmd = new ExternalCommand(tool, ctx, null == selection ? null : selection.getText());
         Executor.execute(cmd);
 
         if (0 != cmd.getExitCode())

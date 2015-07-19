@@ -6,20 +6,24 @@ import java.util.List;
 import mnita.externalfilter.preferences.EFToolDescription;
 
 public class ExternalCommand {
+	
     final EFToolDescription tool;
+    final Context context;
     final String stdIn;
     String       stdOut     = "";
     String       stdErr     = "";
     List<String> exceptions = new ArrayList<String>();
     int          exitCode   = -1;
 
-    public ExternalCommand(EFToolDescription tool, String stdIn) {
+    public ExternalCommand(EFToolDescription tool, Context context, String stdIn) {
         this.tool = tool;
+        this.context = context;
         this.stdIn = stdIn;
     }
 
     public String getCommandLine() {
-        return tool.command;
+    	
+        return context.preprocessCommand(tool.command);
     }
 
     public String getStdIn() {
