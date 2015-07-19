@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BlockTextSelection;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
@@ -65,7 +64,7 @@ public class EclipseEditorGetSet {
         return selection;
     }
 
-    private static void replaceCurrentSelection(Document document, ITextSelection originalSelection, String newText) {
+    private static void replaceCurrentSelection(IDocument document, ITextSelection originalSelection, String newText) {
         try {
             if (originalSelection instanceof BlockTextSelection) {
                 //ToDo ((BlockTextSelection)originalSelection).getRegions()[0];
@@ -77,7 +76,7 @@ public class EclipseEditorGetSet {
         }
     }
 
-    private static void insertInDocumentAtPosition(Document document, int position, ITextSelection originalSelection, String newText) {
+    private static void insertInDocumentAtPosition(IDocument document, int position, ITextSelection originalSelection, String newText) {
         int insertionPoint = document.getLength() - 1;
         if (position < insertionPoint)
             insertionPoint = position;
@@ -91,7 +90,7 @@ public class EclipseEditorGetSet {
         }
     }
 
-    private static void appendToCurrentDocument(Document document, ITextSelection originalSelection, String newText) {
+    private static void appendToCurrentDocument(IDocument document, ITextSelection originalSelection, String newText) {
         insertInDocumentAtPosition(document, document.getLength(), originalSelection, newText);
     }
 
@@ -124,13 +123,12 @@ public class EclipseEditorGetSet {
 //        System.out.println(docProvider); // org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider
 
         IDocument document = docProvider.getDocument(page.getEditorInput()); // org.eclipse.core.internal.filebuffers.SynchronizableDocument
-        if (document instanceof Document) {
             if (to == TextTarget.replaceCrtDoc)
-                ((Document) document).set(newText);
+                document.set(newText);
             else if (to == TextTarget.replaceCrtSel)
-                replaceCurrentSelection((Document) document, originalSelection, newText);
+                replaceCurrentSelection(document, originalSelection, newText);
             else if (to == TextTarget.appendToCrtDoc)
-                appendToCurrentDocument((Document) document, originalSelection, newText);
+                appendToCurrentDocument(document, originalSelection, newText);
 //            else if (to == TextTarget.insertAtCursorPos) {
 //                currentPos = ((AbstractTextEditor)page).getEditorInput().get
 //              // This is really the end of selection, not current cursor position
@@ -139,7 +137,6 @@ public class EclipseEditorGetSet {
 //                        originalSelection.getOffset() + originalSelection.getLength(),
 //                        originalSelection, newText);
 //            }
-        }
     }
 
     private static MessageConsole findConsole(String name) {
