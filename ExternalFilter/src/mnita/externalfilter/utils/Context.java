@@ -35,6 +35,23 @@ public final class Context {
 			}
 		}
 	}
+	
+	public String shellQuote(String input) {
+		
+		return "\"" + input
+				.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("!", "\\!")
+				.replace("$", "\\$") + "\"";
+	}
+	
+	
+	public String replacementQuote(String input) {
+		
+		return input
+				.replace("\\", "\\\\")
+				.replace("$", "\\$");
+	}
 
 	public String preprocessCommand(String command) {
 		
@@ -51,9 +68,10 @@ public final class Context {
 				case "__FILE__": 	replacement = name; break;
 				default: 			replacement = result.group(0); break;
 			}
-			matcher.appendReplacement(buffer,replacement);
+			matcher.appendReplacement(buffer,shellQuote(replacementQuote(replacement)));
 		}
 		matcher.appendTail(buffer);
-		return buffer.toString();
+		String ret = buffer.toString();
+		return ret;
 	}
 }

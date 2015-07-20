@@ -74,7 +74,10 @@ class ProcessInputWriter extends Thread {
 public class Executor {
     public static void execute(ExternalCommand cmd) {
         try {
-            final Process p = Runtime.getRuntime().exec(cmd.getCommandLine());
+        	
+        	String wrappedCommand = cmd.getCommandLine();
+        	ProcessBuilder pb = new ProcessBuilder("/bin/sh", "-c", wrappedCommand);
+            final Process p = pb.start();
             final ProcessResultReader stderr = new ProcessResultReader(p.getErrorStream());
             final ProcessResultReader stdout = new ProcessResultReader(p.getInputStream());
             final ProcessInputWriter stdin = new ProcessInputWriter(p.getOutputStream(), cmd.stdIn);
